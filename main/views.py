@@ -3,7 +3,10 @@ from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
 from django.db import IntegrityError
 import requests
+import logging
 from .models import Article
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -27,9 +30,7 @@ def fetch_articles(request):
     
     articles = data.get('articles', [])
 
-    print(len(articles), 'articles')
-    # print(articles)
-    
+    logger.info(f"Fetched {len(articles)} articles")
 
     for a in articles:
         # --- REQUIRED FIELDS ---
@@ -39,37 +40,26 @@ def fetch_articles(request):
         if not title or not url_value:
             continue
         
+        # --- OPTIONAL FIELDS ---
         published_at = parse_datetime(a.get('publishedAt')) or now()
+        
+        source = a.get("source") or {}
         
         try:
             Article.objects.update_or_create(
-                url=url_value,   # ✅ correct identity
+                url=url_value,   
                 defaults={
                     'title': title,
                     'author': (a.get('author') or '').strip() or None,
                     'description': a.get('description'),
                     'content': a.get('content'),
                     'published_at': published_at,
-                    'source_id': (a.get('source') or {}).get('id'),
+                    'source_id': source.get('id') or source.get('name'),
                     'url_to_image': a.get('urlToImage'),
                 }
             )
         except IntegrityError as e:
-            print("Skipping article due to DB error:", e)
+            logger.info(f"Skipping article due to DB error: {e}")
 
     return redirect('home')
 
-
-
-# To do
-# Add default placeholder
-# Add API filter UI
-# add dark mode
-# add button to delete article
-# verify articles before adding to db
-#   are you sure you want to add 16 articles? 
-#       -article1
-#       -article2
-#       -etc
-#
-#
