@@ -230,7 +230,6 @@ body:has(.ui-toggle:checked) {
                 background: red;
                 opacity: 0;
                 padding: 0;
-
             }
         }
     }
