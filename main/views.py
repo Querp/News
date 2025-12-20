@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_datetime
+from django.utils.timezone import now
+from django.db import IntegrityError
 import requests
 from .models import Article
 
@@ -19,26 +21,41 @@ def fetch_articles(request):
     else:
         url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={API_KEY}'
 
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
+    response.raise_for_status()
     data = response.json()
+    
     articles = data.get('articles', [])
 
     print(len(articles), 'articles')
+    # print(articles)
     
 
     for a in articles:
-        Article.objects.update_or_create(
-            title=a['title'],  
-            defaults={
-                'author': a.get('author'),
-                'description': a.get('description'),
-                'content': a.get('content'),
-                'published_at': parse_datetime(a.get('publishedAt')),
-                'source_id': (a.get('source') or {}).get('id'),
-                'url': a.get('url'),
-                'url_to_image': a.get('urlToImage'),
-            }
-        )
+        # --- REQUIRED FIELDS ---
+        title = (a.get('title') or '').strip()
+        url_value = a.get('url')
+        
+        if not title or not url_value:
+            continue
+        
+        published_at = parse_datetime(a.get('publishedAt')) or now()
+        
+        try:
+            Article.objects.update_or_create(
+                url=url_value,   # ✅ correct identity
+                defaults={
+                    'title': title,
+                    'author': (a.get('author') or '').strip() or None,
+                    'description': a.get('description'),
+                    'content': a.get('content'),
+                    'published_at': published_at,
+                    'source_id': (a.get('source') or {}).get('id'),
+                    'url_to_image': a.get('urlToImage'),
+                }
+            )
+        except IntegrityError as e:
+            print("Skipping article due to DB error:", e)
 
     return redirect('home')
 
