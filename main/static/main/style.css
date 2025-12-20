@@ -41,6 +41,7 @@ footer {
     /* background: rgb(56, 56, 56); */
     padding: 1rem;
     text-align: center;
+    display: none;
 }
 
 header {
@@ -62,7 +63,7 @@ main {
     padding: 0.5rem;
     grid-template-columns: repeat(auto-fit, minmax(var(--article-width), 1fr));
     width: 100%;
-    max-width: 1600px;
+    /* max-width: 1600px; */
     align-self: center;
 
     /* flex-grow: 1; */
