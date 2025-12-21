@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
 from pathlib import Path
+import os
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -77,17 +77,27 @@ WSGI_APPLICATION = 'articles.wsgi.application'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DATABASES = {
-    'default': dj_database_url.parse(
-        os.environ.get('DATABASE_URL'),
-        engine='django_cockroachdb'
-    )
-}
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Add SSL options
-DATABASES['default']['OPTIONS'] = {
-    'sslrootcert': str(BASE_DIR / 'certs' / 'root.crt')
-}
+if DATABASE_URL:
+    # On Render / production, use CockroachDB
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, engine='django_cockroachdb')
+    }
+    # Add SSL options for CockroachDB
+    DATABASES['default']['OPTIONS'] = {
+        'sslrootcert': str(BASE_DIR / 'certs' / 'root.crt')
+    }
+else:
+    # Local development: fallback to SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
 
 
 # Password validation

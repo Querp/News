@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
-from django.db import IntegrityError
 import requests
 import logging
 from .models import Article
@@ -27,11 +26,12 @@ def fetch_articles(request):
     data = response.json()
     articles = data.get('articles', [])
 
-    logger.info(f"Fetched {len(articles)} articles")
+    
 
     create_articles_bulk(articles)
 
     return redirect('home')
+
 
 def create_articles_bulk(articles):
     articles_to_create = []
@@ -42,7 +42,6 @@ def create_articles_bulk(articles):
         if not title or not url_value:
             continue
         
-        # --- OPTIONAL FIELDS ---
         published_at = parse_datetime(a.get('publishedAt')) or now()
         source = a.get("source") or {}
 
@@ -61,3 +60,4 @@ def create_articles_bulk(articles):
             
     if articles_to_create:
         Article.objects.bulk_create(articles_to_create, ignore_conflicts=True)
+        logger.info(f"Fetched {len(articles_to_create)} articles")
