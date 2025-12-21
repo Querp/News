@@ -47,19 +47,25 @@ def create_article(a):
     published_at = parse_datetime(a.get('publishedAt')) or now()
     
     source = a.get("source") or {}
+
+    articles_to_create = []
     
     try:
-        Article.objects.update_or_create(
-            url=url_value,   
-            defaults={
-                'title': title,
-                'author': (a.get('author') or '').strip() or None,
-                'description': a.get('description'),
-                'content': a.get('content'),
-                'published_at': published_at,
-                'source_id': source.get('id') or source.get('name'),
-                'url_to_image': a.get('urlToImage'),
-            }
-        )
+        articles_to_create.append(
+            Article.objects.update_or_create(
+                url=url_value,   
+                defaults={
+                    'title': title,
+                    'author': (a.get('author') or '').strip() or None,
+                    'description': a.get('description'),
+                    'content': a.get('content'),
+                    'published_at': published_at,
+                    'source_id': source.get('id') or source.get('name'),
+                    'url_to_image': a.get('urlToImage'),
+                }
+            )
+        )    
     except IntegrityError as e:
         logger.info(f"Skipping article due to DB error: {e}")
+        
+    Article.objects.bulk_create(articles_to_create, ignore_conflicts=True)
