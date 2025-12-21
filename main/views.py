@@ -25,47 +25,39 @@ def fetch_articles(request):
     response = requests.get(url, timeout=10)
     response.raise_for_status()
     data = response.json()
-    
     articles = data.get('articles', [])
 
     logger.info(f"Fetched {len(articles)} articles")
 
-    for a in articles:
-        create_article(a)
+    create_articles_bulk(articles)
 
     return redirect('home')
 
-def create_article(a):
-    # --- REQUIRED FIELDS ---
-    title = (a.get('title') or '').strip()
-    url_value = a.get('url')
-    
-    if not title or not url_value:
-        return
-    
-    # --- OPTIONAL FIELDS ---
-    published_at = parse_datetime(a.get('publishedAt')) or now()
-    
-    source = a.get("source") or {}
-
+def create_articles_bulk(articles):
     articles_to_create = []
     
-    try:
+    for a in articles:
+        title = (a.get('title') or '').strip()
+        url_value = a.get('url')
+        if not title or not url_value:
+            continue
+        
+        # --- OPTIONAL FIELDS ---
+        published_at = parse_datetime(a.get('publishedAt')) or now()
+        source = a.get("source") or {}
+
         articles_to_create.append(
-            Article.objects.update_or_create(
-                url=url_value,   
-                defaults={
-                    'title': title,
-                    'author': (a.get('author') or '').strip() or None,
-                    'description': a.get('description'),
-                    'content': a.get('content'),
-                    'published_at': published_at,
-                    'source_id': source.get('id') or source.get('name'),
-                    'url_to_image': a.get('urlToImage'),
-                }
+            Article(
+                title=title,
+                url=url_value,
+                author=(a.get('author') or '').strip() or None,
+                description=a.get('description'),
+                content=a.get('content'),
+                published_at=published_at,
+                source_id=source.get('id') or source.get('name'),
+                url_to_image=a.get('urlToImage'),
             )
         )    
-    except IntegrityError as e:
-        logger.info(f"Skipping article due to DB error: {e}")
-        
-    Article.objects.bulk_create(articles_to_create, ignore_conflicts=True)
+            
+    if articles_to_create:
+        Article.objects.bulk_create(articles_to_create, ignore_conflicts=True)
