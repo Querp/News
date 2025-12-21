@@ -10,29 +10,39 @@
     </title>
     <link href="https://fonts.googleapis.com/css2?family=SUSE:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'main/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/nav.css' %}" />
   </head>
   <body>
+
+    <nav>
+      <div class="toggles">
+        <div class="search">
+          <input id="search-toggle" type="checkbox" name="search" />
+          <label for="search-toggle">⌕</label>
+        </div>
+        <div class="ui">
+          <input id="ui-toggle" type="checkbox" name="ui-toggle" />
+          <label for="ui-toggle">☂</label>
+        </div>
+      </div>
+      <div class="search-bar">
+        <form action="{% url 'fetch_articles' %}" method="GET">
+          <input type="text" name="q" id="search-query" placeholder="Search…" />
+          <label for="everything">Everything</label>
+
+          <input type="radio" name="endpoint" id="everything" value="everything" checked> 
+          <label for="headlines">Headlines</label>
+
+          <input type="radio" name="endpoint" id="headlines" value="headlines">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </nav>
+
     <header>
       <h1>The News</h1>
     </header>
 
-    <div class="search-bar">
-      <form action="{% url 'fetch_articles' %}" method="GET">
-        <input type="text" name="q" id="search-query" placeholder="Search…" />
-        <label for="everything">Everything</label>
-        <input type="radio" name="endpoint" id="everything" value="everything" checked> 
-        <label for="headlines">Headlines</label>
-        <input type="radio" name="endpoint" id="headlines" value="headlines">
-        <button type="submit">Search</button>
-      </form>
-
-    </div>
-
-    <input class="search" id="search" type="checkbox" name="search" />
-    <label class="search-label" for="search">⌕</label>
-
-    <input class="ui-toggle" id="ui-toggle" type="checkbox" name="ui-toggle" />
-    <label class="ui-toggle-label" for="ui-toggle">☂</label>
     <main>
       {% block content %}
 

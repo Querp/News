@@ -19,8 +19,6 @@ def fetch_articles(request):
     endpoint = request.GET.get('endpoint', 'everything')
     if endpoint == 'everything':
         url = f'https://newsapi.org/v2/everything?q={query}&apiKey={API_KEY}'
-    elif endpoint == 'headlines':
-        url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={API_KEY}'
     else:
         url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={API_KEY}'
 
@@ -33,33 +31,35 @@ def fetch_articles(request):
     logger.info(f"Fetched {len(articles)} articles")
 
     for a in articles:
-        # --- REQUIRED FIELDS ---
-        title = (a.get('title') or '').strip()
-        url_value = a.get('url')
-        
-        if not title or not url_value:
-            continue
-        
-        # --- OPTIONAL FIELDS ---
-        published_at = parse_datetime(a.get('publishedAt')) or now()
-        
-        source = a.get("source") or {}
-        
-        try:
-            Article.objects.update_or_create(
-                url=url_value,   
-                defaults={
-                    'title': title,
-                    'author': (a.get('author') or '').strip() or None,
-                    'description': a.get('description'),
-                    'content': a.get('content'),
-                    'published_at': published_at,
-                    'source_id': source.get('id') or source.get('name'),
-                    'url_to_image': a.get('urlToImage'),
-                }
-            )
-        except IntegrityError as e:
-            logger.info(f"Skipping article due to DB error: {e}")
+        create_article(a)
 
     return redirect('home')
 
+def create_article(a):
+    # --- REQUIRED FIELDS ---
+    title = (a.get('title') or '').strip()
+    url_value = a.get('url')
+    
+    if not title or not url_value:
+        return
+    
+    # --- OPTIONAL FIELDS ---
+    published_at = parse_datetime(a.get('publishedAt')) or now()
+    
+    source = a.get("source") or {}
+    
+    try:
+        Article.objects.update_or_create(
+            url=url_value,   
+            defaults={
+                'title': title,
+                'author': (a.get('author') or '').strip() or None,
+                'description': a.get('description'),
+                'content': a.get('content'),
+                'published_at': published_at,
+                'source_id': source.get('id') or source.get('name'),
+                'url_to_image': a.get('urlToImage'),
+            }
+        )
+    except IntegrityError as e:
+        logger.info(f"Skipping article due to DB error: {e}")

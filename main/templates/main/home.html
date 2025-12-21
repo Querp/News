@@ -1,5 +1,6 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load human_date %}
 
 
 {% block title %}
@@ -14,27 +15,21 @@
   {% for article in articles %}
     <article>
         <a href="{{ article.url }}" target="_blank">
-            <p class="source-name">{{ article.source_id }}</p>
-            <div class="header">
-              
+          <div class="header">
             {% if article.url_to_image %}
                 <img src="{{ article.url_to_image }}" alt="" />
             {% else %}
                 <img src={% static "main/missing_image.png" %} alt="" />
             {% endif %}
-            </div>
-            <div class="body">
-                <h3 class="title">{{ article.title }}</h3>
-                <p class="author">
-                    <strong>{{ article.author }}</strong> — {{ article.published_at|date:"d/m/y" }}
-                </p>
-                 <p class="description">{{ article.description }}</p>
-                <p class="content">{{ article.content }}</p> 
-                
-            </div>
+            <p class="date">{{ article.published_at|human_date }}</p>
+          </div>
+          <div class="body">
+            <h3 class="title">{{ article.title }}</h3>
+            <p class="source-name">{{ article.source_id }}</p>
+            <p class="description">{{ article.description }}</p>
+            <p class="content">{{ article.content }}</p> 
+          </div>
         </a>
     </article>
-  {% empty %}
-    <p>No articles found.</p>
   {% endfor %}
 {% endblock %}

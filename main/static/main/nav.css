@@ -1,0 +1,82 @@
+nav {
+    position: fixed;
+    inset: 0 auto auto 0;
+    z-index: 1;
+    padding: 1rem;
+
+    .toggles {
+        display: flex;
+        gap: 0.5rem;
+
+        .search,
+        .ui {}
+
+        .search {
+            position: relative;
+            z-index: 3;
+        }
+
+        .ui {}
+
+        input {
+            display: none;
+        }
+
+        label {
+            background: rgba(38, 38, 38, 0.8);
+            width: 80px;
+            height: 80px;
+            aspect-ratio: 1;
+            display: grid;
+            place-content: center;
+            font-size: 4rem;
+            font-weight: 900;
+            border-radius: 999rem;
+            transition: transform 0.35s ease;
+            user-select: none;
+            z-index: 3;
+            line-height: 0;
+
+            &:hover {
+                cursor: pointer;
+                background: hsla(0, 0%, 80%, 0.14);
+            }
+        }
+    }
+
+    .search-bar {
+        /* box-sizing: content-box; */
+        position: fixed;
+        inset: 0;
+        background: #222;
+        z-index: 2;
+        height: 0;
+        overflow: hidden;
+        display: flex;
+        padding: 0 0 0 12rem;
+        transition: height 0.3s ease, padding 0.1s 0.2s;
+
+        input {
+            align-self: flex-start;
+            font-size: 3.5rem;
+            font-family: inherit;
+        }
+    }
+
+    .search input,
+    .ui input {
+        &:checked+label {
+            transform: rotate(90deg);
+        }
+    }
+
+}
+
+body:has(.toggles .search input:checked) {
+    .search-bar {
+        height: auto;
+        padding-top: 2rem;
+        transition: height 0.3s ease;
+        
+    }
+}
