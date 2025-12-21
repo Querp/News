@@ -78,13 +78,15 @@ WSGI_APPLICATION = 'articles.wsgi.application'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        engine='django_cockroachdb',
-        OPTIONS={
-            'sslrootcert': str(BASE_DIR / 'certs' / 'root.crt')
-        }
+    'default': dj_database_url.parse(
+        os.environ.get('DATABASE_URL'),
+        engine='django_cockroachdb'
     )
+}
+
+# Add SSL options
+DATABASES['default']['OPTIONS'] = {
+    'sslrootcert': str(BASE_DIR / 'certs' / 'root.crt')
 }
 
 
