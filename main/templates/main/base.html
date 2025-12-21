@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{% static 'main/nav.css' %}" />
   </head>
   <body>
-
+    {% csrf_token %}
     <nav>
       <div class="toggles">
         <div class="search">
@@ -52,5 +52,6 @@
     <footer>
       <p>© 2025 The News</p>
     </footer>
+    <script src="{% static 'main/save_article.js' %}"></script>
   </body>
 </html>

@@ -1,21 +1,29 @@
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
 import requests
 import logging
+import json
 from .models import Article
 
 logger = logging.getLogger(__name__)
+API_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
 
 
 def home(request):
-    articles = list(Article.objects.order_by('-published_at'))
-    return render(request, "main/home.html", {'articles': articles})
+    saved_articles = Article.objects.order_by('-published_at')
+    return render(request, "main/home.html", {
+        'saved_articles': saved_articles,
+        'fetched_articles': [],
+        })
 
 def fetch_articles(request):
-    API_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
     query = request.GET.get('q', '')  
     endpoint = request.GET.get('endpoint', 'everything')
+    
     if endpoint == 'everything':
         url = f'https://newsapi.org/v2/everything?q={query}&apiKey={API_KEY}'
     else:
@@ -23,41 +31,63 @@ def fetch_articles(request):
 
     response = requests.get(url, timeout=10)
     response.raise_for_status()
+    
     data = response.json()
-    articles = data.get('articles', [])
-
+    raw_articles = data.get('articles', [])
     
-
-    create_articles_bulk(articles)
-
-    return redirect('home')
-
-
-def create_articles_bulk(articles):
-    articles_to_create = []
+    fetched_articles = []
+    for a in raw_articles:
+        article = normalize_article(a)
+        if article:
+            fetched_articles.append(article)
     
-    for a in articles:
-        title = (a.get('title') or '').strip()
-        url_value = a.get('url')
-        if not title or not url_value:
-            continue
-        
-        published_at = parse_datetime(a.get('publishedAt')) or now()
-        source = a.get("source") or {}
+    saved_articles = Article.objects.order_by('-published_at')
+    
+    logger.info("Fetched %d articles", len(fetched_articles))
+    return render(request, "main/home.html", {
+        'saved_articles': saved_articles,
+        'fetched_articles': fetched_articles,
+    })
+    
+    
+def normalize_article(a):
+    title = (a.get('title') or '').strip()
+    url_value = a.get('url')
+    
+    if not title or not url_value:
+        return None
 
-        articles_to_create.append(
-            Article(
-                title=title,
-                url=url_value,
-                author=(a.get('author') or '').strip() or None,
-                description=a.get('description'),
-                content=a.get('content'),
-                published_at=published_at,
-                source_id=source.get('id') or source.get('name'),
-                url_to_image=a.get('urlToImage'),
-            )
-        )    
-            
-    if articles_to_create:
-        Article.objects.bulk_create(articles_to_create, ignore_conflicts=True)
-        logger.info(f"Fetched {len(articles_to_create)} articles")
+    published_at = parse_datetime(a.get('publishedAt')) or now()
+    source = a.get("source") or {}
+
+    return {
+        'title': title,
+        'url': url_value,
+        'author': (a.get('author') or '').strip() or None,
+        'description': a.get('description'),
+        'content': a.get('content'),
+        'published_at': published_at,
+        'source_id': source.get('id') or source.get('name'),
+        'url_to_image': a.get('urlToImage'),
+    }
+
+
+def save_article(request):
+    data = json.loads(request.body)
+
+    # prevent duplicates
+    if Article.objects.filter(url=data['url']).exists():
+        return JsonResponse({'status': 'exists'})
+
+    Article.objects.create(
+        title=data['title'],
+        url=data['url'],
+        author=data.get('author'),
+        description=data.get('description'),
+        content=data.get('content'),
+        published_at=data['published_at'],
+        source_id=data.get('source_id'),
+        url_to_image=data.get('url_to_image'),
+    )
+
+    return JsonResponse({'status': 'saved'})
