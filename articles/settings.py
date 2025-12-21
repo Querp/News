@@ -74,18 +74,16 @@ WSGI_APPLICATION = 'articles.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        engine='django_cockroachdb',
+        OPTIONS={
+            'sslrootcert': str(BASE_DIR / 'certs' / 'root.crt')
+        }
     )
 }
 
