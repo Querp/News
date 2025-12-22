@@ -16,11 +16,15 @@ document.addEventListener("click", async e => {
 
     const result = await response.json();
 
+    const iconE = e.target.querySelector('.icon')
+
     if (result.status === "saved") {
-        e.target.textContent = "Saved ✓";
+        // iconE.textContent = "Saved ✓";
+        iconE.textContent = "check_box";
         e.target.disabled = true;
     } else {
-        e.target.textContent = "Already saved";
+        iconE.textContent = "save";
+        // iconE.textContent = "Already saved";
         e.target.disabled = true;
     }
 });

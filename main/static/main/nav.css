@@ -1,12 +1,18 @@
 nav {
-    position: fixed;
-    inset: 0 auto auto 0;
+    position: sticky;
+    top: 0;
+    background: rgb(24, 24, 24);
     z-index: 3;
     padding: 1rem;
+    margin: -1rem -1rem 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: auto auto 1fr;
+    align-items: center;
 
     .toggles {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.25rem;
 
         .search,
         .ui {}
@@ -44,12 +50,42 @@ nav {
         }
     }
 
+    a {
+        text-decoration: none;
+        color: inherit;
+        background: rgba(38, 38, 38, 0.8);
+        /* width: 80px; */
+        height: 80px;
+        aspect-ratio: 1;
+        display: grid;
+        place-content: center;
+        font-size: 1.5rem;
+        font-weight: 200;
+        border-radius: 999rem;
+        transition: transform 0.35s ease;
+        user-select: none;
+        z-index: 4;
+        white-space: nowrap;
+        padding: 0 30px;
+        /* line-height: 0; */
+
+        &:hover {
+            cursor: pointer;
+            background: hsla(0, 0%, 80%, 0.14);
+        }
+
+    }
+
+    h1 {
+        margin-left: 1rem;
+    }
+
     .search-bar {
         /* box-sizing: content-box; */
         position: fixed;
         inset: 0;
         background: #222;
-        z-index: 3;
+        z-index: 4;
         height: 0;
         overflow: hidden;
         display: flex;
@@ -69,7 +105,6 @@ nav {
             transform: rotate(90deg);
         }
     }
-
 }
 
 body:has(.toggles .search input:checked) {

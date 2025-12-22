@@ -4,7 +4,7 @@
 
 
 {% block title %}
-  Home
+  Fetched Articles
 {% endblock %}
 
 {% block content %}
@@ -39,30 +39,3 @@
     </a>
 </article>
 {% endfor %}
-
-
-{% comment %} <article class="saved-count">
-  <p>{{ saved_articles|length }} </p>
-  <p>Saved Articles</p>
-</article>
-  {% for article in saved_articles %}
-    <article>
-        <a href="{{ article.url }}" target="_blank">
-          <div class="header">
-            {% if article.url_to_image %}
-                <img src="{{ article.url_to_image }}" alt="" />
-            {% else %}
-                <img src={% static "main/missing_image.png" %} alt="" />
-            {% endif %}
-            <p class="date">{{ article.published_at|human_date }}</p>
-          </div>
-          <div class="body">
-            <h3 class="title">{{ article.title }}</h3>
-            <p class="source-name">{{ article.source_id }}</p>
-            <p class="description">{{ article.description }}</p>
-            <p class="content">{{ article.content }}</p> 
-          </div>
-        </a>
-    </article>
-  {% endfor %} {% endcomment %}
-{% endblock %}

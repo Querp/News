@@ -91,3 +91,7 @@ def save_article(request):
     )
 
     return JsonResponse({'status': 'saved'})
+
+def my_articles(request):
+    saved_articles = Article.objects.order_by('-published_at')
+    return render(request, "main/my_articles.html", { 'saved_articles': saved_articles })
