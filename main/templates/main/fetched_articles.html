@@ -9,11 +9,11 @@
 
 {% block content %}
 <article class="fetch-count">
-  <p>{{ fetched_articles|length }} </p>
+  <p>{{ articles|length }} </p>
   <p>Fetched Articles</p>
 </article>
 
-{% for article in fetched_articles %}
+{% for article in articles %}
 <div class="json-data" id="article-data-{{ forloop.counter }}">
   {{article|json_script:"article_data"}}
 </div>
@@ -39,3 +39,4 @@
     </a>
 </article>
 {% endfor %}
+{% endblock %}

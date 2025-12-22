@@ -35,18 +35,16 @@ def fetch_articles(request):
     data = response.json()
     raw_articles = data.get('articles', [])
     
-    fetched_articles = []
+    articles = []
     for a in raw_articles:
         article = normalize_article(a)
         if article:
-            fetched_articles.append(article)
+            articles.append(article)
     
-    saved_articles = Article.objects.order_by('-published_at')
+    logger.info("Fetched %d articles", len(articles))
     
-    logger.info("Fetched %d articles", len(fetched_articles))
-    return render(request, "main/home.html", {
-        'saved_articles': saved_articles,
-        'fetched_articles': fetched_articles,
+    return render(request, "main/fetched_articles.html", {
+        'articles': articles,
     })
     
     
@@ -93,5 +91,10 @@ def save_article(request):
     return JsonResponse({'status': 'saved'})
 
 def my_articles(request):
-    saved_articles = Article.objects.order_by('-published_at')
-    return render(request, "main/my_articles.html", { 'saved_articles': saved_articles })
+    articles = Article.objects.order_by('-published_at')
+    return render(request, "main/my_articles.html", { 'articles': articles })
+
+
+# def fetched_articles(request):
+#     articles = Article.objects.order_by('-published_at')
+#     return render(request, "main/fetched_articles.html", { 'articles': articles })

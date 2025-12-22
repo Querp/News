@@ -9,10 +9,10 @@
 
 {% block content %}
 <article class="saved-count">
-  <p>{{ saved_articles|length }} </p>
+  <p>{{ articles|length }} </p>
   <p>Saved Articles</p>
 </article>
-  {% for article in saved_articles %}
+  {% for article in articles %}
     <article>
         <a href="{{ article.url }}" target="_blank">
           <div class="header">
