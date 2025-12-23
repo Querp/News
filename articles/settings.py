@@ -166,4 +166,4 @@ LOGGING = {
     },
 }
 
-# NEWSAPI_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
+NEWSAPI_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
