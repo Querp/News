@@ -12,8 +12,10 @@
     {% comment %} <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" /> {% endcomment %}
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{% static 'main/style.css' %}" />
-    <link rel="stylesheet" href="{% static 'main/nav.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/nav.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/sources.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/articles.css' %}" />
   </head>
   <body>
     {% csrf_token %}
@@ -22,6 +24,9 @@
       <div class="body">
         <div class="ui home">
           <a href="{% url 'my_articles' %}"><span class="material-symbols-outlined">house</span></a>
+        </div>
+        <div class="ui home">
+          <a href="{% url 'sources' %}"><span class="material-symbols-outlined">umbrella</span></a>
         </div>
         <div class="search">
           <input id="search-toggle" type="checkbox" name="search" />

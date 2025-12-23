@@ -1,0 +1,31 @@
+.sources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem 1.2rem ;
+    .source {
+        justify-items: center;
+        /* background: rgb(33, 33, 33); */
+        border-radius: 0.35rem;
+
+        .name {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        img {
+            width: 100%;
+            aspect-ratio: 200 / 110;
+            /* object-fit: contain; */
+            object-fit: cover;
+            display: block;
+            /* max-height: 90%; */
+            /* padding: 0.25rem; */
+            /* margin-inline: auto; */
+        }
+        .description {
+            padding: 0.35rem;
+            height: 135px;
+            overflow-y: auto;
+        }
+    }
+}

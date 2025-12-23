@@ -8,10 +8,11 @@
 {% endblock %}
 
 {% block content %}
-<article class="saved-count">
-  <p>{{ articles|length }} </p>
-  <p>Saved Articles</p>
-</article>
+<div class="articles">
+  <article class="saved-count">
+    <p>{{ articles|length }} </p>
+    <p>Saved Articles</p>
+  </article>
   {% for article in articles %}
     <article>
         <a href="{{ article.url }}" target="_blank">
@@ -32,4 +33,5 @@
         </a>
     </article>
   {% endfor %}
+</div>
 {% endblock %}

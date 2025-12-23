@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load human_date %}
+{% load human_country %}
+{% load human_language %}
+
+
+{% block title %}
+  Sources
+{% endblock %}
+
+{% block content %}
+<h1>{{ sources.count}} Sources</h1>
+
+<div class="sources">
+    {% for source in sources %}
+    <div class="source">
+        <div class="name">{{ source.name }}</div>
+        <div class="body">
+            {% if source.url_to_image %}
+                <img src="{{ source.url_to_image }}" alt="">
+            {% else %}
+                <img src="{% static 'main/missing_image.png' %}" alt="" />
+            {% endif %}
+
+            <div class="category">{{ source.category }}</div>
+            <div class="country">{{ source.country|human_country }}</div>
+            <div class="language">{{ source.language|human_language }}</div>
+            <div class="description">{{ source.description }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

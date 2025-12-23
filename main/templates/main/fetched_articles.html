@@ -8,35 +8,37 @@
 {% endblock %}
 
 {% block content %}
-<article class="fetch-count">
-  <p>{{ articles|length }} </p>
-  <p>Fetched Articles</p>
-</article>
+<div class="articles">
+  <article class="fetch-count">
+    <p>{{ articles|length }} </p>
+    <p>Fetched Articles</p>
+  </article>
 
-{% for article in articles %}
-<div class="json-data" id="article-data-{{ forloop.counter }}">
-  {{article|json_script:"article_data"}}
+  {% for article in articles %}
+  <div class="json-data" id="article-data-{{ forloop.counter }}">
+    {{article|json_script:"article_data"}}
+  </div>
+  <article >
+      <button class="save-button" id="save-button-{{ forloop.counter }}">
+        <span class="icon material-symbols-outlined">check_box_outline_blank</span>
+      </button>
+      <a href="{{ article.url }}" target="_blank">
+          <div class="header">
+              {% if article.url_to_image %}
+                  <img src="{{ article.url_to_image }}" alt="" />
+              {% else %}
+                  <img src="{% static 'main/missing_image.png' %}" alt="" />
+              {% endif %}
+              <p class="date">{{ article.published_at|human_date }}</p>
+          </div>
+          <div class="body">
+              <h3>{{ article.title }}</h3>
+              <p>{{ article.source_id }}</p>
+              <p>{{ article.description }}</p>
+              <p>{{ article.content }}</p>
+          </div>
+      </a>
+  </article>
+  {% endfor %}
 </div>
-<article >
-    <button class="save-button" id="save-button-{{ forloop.counter }}">
-      <span class="icon material-symbols-outlined">check_box_outline_blank</span>
-    </button>
-    <a href="{{ article.url }}" target="_blank">
-        <div class="header">
-            {% if article.url_to_image %}
-                <img src="{{ article.url_to_image }}" alt="" />
-            {% else %}
-                <img src="{% static 'main/missing_image.png' %}" alt="" />
-            {% endif %}
-            <p class="date">{{ article.published_at|human_date }}</p>
-        </div>
-        <div class="body">
-            <h3>{{ article.title }}</h3>
-            <p>{{ article.source_id }}</p>
-            <p>{{ article.description }}</p>
-            <p>{{ article.content }}</p>
-        </div>
-    </a>
-</article>
-{% endfor %}
 {% endblock %}

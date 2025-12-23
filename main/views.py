@@ -7,7 +7,7 @@ from django.utils.timezone import now
 import requests
 import logging
 import json
-from .models import Article
+from .models import Article, Source
 
 logger = logging.getLogger(__name__)
 API_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
@@ -93,6 +93,11 @@ def save_article(request):
 def my_articles(request):
     articles = Article.objects.order_by('-published_at')
     return render(request, "main/my_articles.html", { 'articles': articles })
+
+
+def sources(request):
+    sources = Source.objects.all()
+    return render(request, "main/sources.html", {'sources': sources} )
 
 
 # def fetched_articles(request):
