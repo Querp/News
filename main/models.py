@@ -12,3 +12,27 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+class Source(models.Model):
+    CATEGORY_CHOICES = [
+        ('business', 'Business'),
+        ('entertainment', 'Entertainment'),
+        ('general', 'General'),
+        ('health', 'Health'),
+        ('science', 'Science'),
+        ('sports', 'Sports'),
+        ('technology', 'Technology'),
+    ]
+    
+    api_id = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=255, )
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    language = models.CharField(max_length=10)
+    country = models.CharField(max_length=10)
+    url = models.URLField()
+    url_to_image = models.URLField(null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+    
