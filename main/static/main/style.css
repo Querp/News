@@ -65,6 +65,17 @@ main {
     display: none;
 }
 
+/* Material UI Icons */
+.material-symbols-outlined {
+    /* color: red; */
+    font-size: 2rem;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 100,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
 /*---------------------------------- ARTICLE ----------------------------------*/
 article {
     --body-content-height: 180px;
@@ -99,7 +110,7 @@ article {
         border-radius: 0.5rem 0.5rem 0 0;
         line-height: 2.7rem;
 
-        .material-icons-outlined {
+        .icon {
             font-size: 5rem;
             color: #e4e4e4e9;
             line-height: 1;
@@ -125,7 +136,7 @@ article {
         font-weight: 600;
         color: #555;
         text-align: center;
-        grid-column: 1 / -1;
+        /* grid-column: 1 / -1; */
     }
 
     a {
@@ -246,3 +257,4 @@ body:has(.ui input:checked) {
         }
     }
 }
+

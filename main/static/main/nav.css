@@ -10,7 +10,7 @@ nav {
     grid-template-columns: auto auto 1fr;
     align-items: center;
 
-    .toggles {
+    .body {
         display: flex;
         gap: 0.25rem;
 
@@ -38,10 +38,13 @@ nav {
             font-size: 4rem;
             font-weight: 900;
             border-radius: 999rem;
-            transition: transform 0.35s ease;
             user-select: none;
             z-index: 4;
             line-height: 0;
+            
+            span {
+                transition: transform 0.35s ease;
+            }
 
             &:hover {
                 cursor: pointer;
@@ -66,7 +69,7 @@ nav {
         user-select: none;
         z-index: 4;
         white-space: nowrap;
-        padding: 0 30px;
+        /* padding: 0 30px; */
         /* line-height: 0; */
 
         &:hover {
@@ -81,37 +84,96 @@ nav {
     }
 
     .search-bar {
-        /* box-sizing: content-box; */
         position: fixed;
         inset: 0;
-        background: #222;
         z-index: 4;
-        height: 0;
         overflow: hidden;
-        display: flex;
-        padding: 0 0 0 12rem;
+        display: grid;
+        place-content: center;
+
+        background: #222;
+        height: 0;
+
         transition: height 0.3s ease, padding 0.1s 0.2s;
 
-        input {
-            align-self: flex-start;
-            font-size: 3.5rem;
-            font-family: inherit;
+        form {
+            .endpoints {
+                background: lime;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+
+                .endpoint {
+                    background: rgb(75, 75, 75);
+
+                    label {
+                        width: 100%;
+                        display: block;
+                        padding: 2rem 0;
+                        text-align: center;
+                        font-size: 1.5rem;
+                    }
+
+                    &:has(input:checked) label {
+                        background: rgb(202, 202, 202);
+                        color: #151515;
+                    }
+                }
+            }
         }
+
+        .query {
+            /* background: orange; */
+            display: grid;
+            grid-template-columns: 1fr auto;
+            background: #333;
+
+            input {
+                font-size: 3.5rem;
+                font-family: inherit;
+                background: transparent;
+                border: none;
+                color: inherit;
+                padding: 1rem 2.5rem;
+                border-radius: 0;
+                &:focus-within {
+                    background: rgb(17, 17, 17);
+                    border: none;
+                    outline: none;
+                }
+            }
+            button {
+                height: 100%;
+                aspect-ratio: 1;
+                background: transparent;
+                border: none;
+                color: #ddd;
+            }
+        }
+
+        input[type='radio'] {
+            display: none;
+        }
+
     }
 
-    .search input,
-    .ui input {
-        &:checked+label {
-            transform: rotate(90deg);
-        }
+    .search input:checked+label span {
+        transform:rotateX(180deg)
     }
+
+    .ui input:checked+label span {
+        transform: rotate(-90deg);
+    }
+
 }
 
-body:has(.toggles .search input:checked) {
+body:has(.body .search input:checked) {
     .search-bar {
         height: auto;
-        padding-top: 2rem;
         transition: height 0.3s ease;
-        
     }
 }
+
+/* body .search-bar {
+    height: auto;
+    padding-top: 2rem;
+} */
