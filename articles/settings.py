@@ -97,6 +97,19 @@ else:
         }
     }
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django_cockroachdb",
+#         "NAME": "defaultdb",
+#         "USER": "querp",
+#         "PASSWORD": "tGSEE3AKFIJTVbD0SwCFlQ",
+#         "HOST": "<your_db_host>",   # something like free-tier.cockroachlabs.cloud
+#         "PORT": 26257,
+#         "OPTIONS": {
+#             "sslmode": "require",
+#         },
+#     }
+# }
 
 
 

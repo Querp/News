@@ -1,13 +1,21 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
+from django.core.management.base import BaseCommand
+from django.conf import settings
 import requests
 import logging
+import time
 import json
 from .models import Article, Source
+from urllib.parse import urljoin
+from bs4 import BeautifulSoup
+
+
+
 
 logger = logging.getLogger(__name__)
 API_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
@@ -100,6 +108,138 @@ def sources(request):
     return render(request, "main/sources.html", {'sources': sources} )
 
 
-# def fetched_articles(request):
-#     articles = Article.objects.order_by('-published_at')
-#     return render(request, "main/fetched_articles.html", { 'articles': articles })
+@require_POST
+def fetch_sources(request):
+    url = "https://newsapi.org/v2/top-headlines/sources"
+    params = {
+        "apiKey": settings.NEWSAPI_KEY,
+    }
+
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        logger.error("NewsAPI request failed: %s", e)
+        return HttpResponse("NewsAPI request failed", status=502)
+
+    data = response.json()
+    sources = data.get("sources", [])
+
+    allowed_categories = dict(Source.CATEGORY_CHOICES)
+
+    created = 0
+    updated = 0
+    skipped = 0
+
+    for s in sources:
+        api_id = s.get("id")
+        category = s.get("category")
+
+        if not api_id or category not in allowed_categories:
+            skipped += 1
+            continue
+
+        defaults = {
+            "name": s.get("name", ""),
+            "description": s.get("description", ""),
+            "category": category,
+            "language": s.get("language", ""),
+            "country": s.get("country", ""),
+            "url": s.get("url", ""),
+        }
+
+        obj, was_created = Source.objects.get_or_create(
+            api_id=api_id,
+            defaults=defaults,
+        )
+
+        if was_created:
+            created += 1
+            continue
+
+        # Update existing records if changed
+        dirty = False
+        for field, value in defaults.items():
+            if getattr(obj, field) != value:
+                setattr(obj, field, value)
+                dirty = True
+
+        if dirty:
+            obj.save(update_fields=defaults.keys())
+            updated += 1
+
+    logger.info(
+        "NewsAPI sources sync complete: total=%d created=%d updated=%d skipped=%d",
+        len(sources),
+        created,
+        updated,
+        skipped,
+    )
+
+    return HttpResponse(
+        f"Done. Created={created}, Updated={updated}, Skipped={skipped}"
+    )
+        
+        
+def extract_og_image(url):
+    """Extract og:image from page HTML, fallback-safe."""
+    try:
+        response = requests.get(
+            url, timeout=10, headers={"User-Agent": "Mozilla/5.0"}
+        )
+        response.raise_for_status()
+    except requests.RequestException:
+        return None
+
+    soup = BeautifulSoup(response.text, "html.parser")
+    tag = soup.find("meta", property="og:image")
+    if tag and tag.get("content"):
+        return tag["content"]
+    return None
+
+
+@require_POST
+def fetch_sources_images(request):
+    sources = Source.objects.filter(url_to_image__isnull=True)
+    total = sources.count()
+
+    if total == 0:
+        return HttpResponse("No sources need images.")
+
+    updated = 0
+    failed = 0
+    skip_sources = {"CBC News"}  # fast lookup set
+
+    logger.info("Fetching images for %d sources", total)
+
+    for i, source in enumerate(sources, start=1):
+        if source.name in skip_sources:
+            logger.info("[%d/%d] %s skipped explicitly", i, total, source.name)
+            continue
+
+        try:
+            image = extract_og_image(source.url)
+            if image:
+                source.url_to_image = urljoin(source.url, image)
+                source.save(update_fields=["url_to_image"])
+                updated += 1
+                logger.info("[%d/%d] %s OK", i, total, source.name)
+            else:
+                failed += 1
+                logger.warning("[%d/%d] %s no image found", i, total, source.name)
+
+        except Exception as e:
+            failed += 1
+            logger.error("[%d/%d] %s failed: %s", i, total, source.name, e)
+            time.sleep(1)  # polite backoff
+
+    logger.info(
+        "Image fetch complete: total=%d updated=%d failed=%d",
+        total,
+        updated,
+        failed,
+    )
+
+    return HttpResponse(
+        f"Done. Updated={updated}, Failed={failed}, Total={total}"
+    )
