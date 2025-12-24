@@ -2,8 +2,8 @@ name: Fetch Headlines
 
 on:
   schedule:
-    # every hour at minute 0
-    - cron: '0 * * * *'
+    # - cron: '0 * * * *'    # every hour
+    - cron: '*/5 * * * *'  # every 5 minutes
   workflow_dispatch: # allows manual trigger
 
 jobs:
