@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 import dj_database_url
+from dotenv import load_dotenv
+
+# Load Env variables locally 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,10 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3z1a&%v2fjb@=mf0nmy#w@ri2xc2q6+3!qy661v$2t3f&2e(-#'
+# SECRET_KEY = 'django-insecure-3z1a&%v2fjb@=mf0nmy#w@ri2xc2q6+3!qy661v$2t3f&2e(-#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 
 
@@ -179,4 +183,6 @@ LOGGING = {
     },
 }
 
-NEWSAPI_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
+# NEWSAPI_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
+NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "")
+FETCH_SECRET_KEY = os.environ.get("FETCH_SECRET_KEY", "")
