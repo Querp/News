@@ -1,0 +1,18 @@
+name: Fetch Headlines
+
+on:
+  schedule:
+    # every hour at minute 0
+    - cron: '0 * * * *'
+  workflow_dispatch: # allows manual trigger
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Django fetch endpoint
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.FETCH_HEADLINES_URL }}
+          method: GET
+          timeout: 60

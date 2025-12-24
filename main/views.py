@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 from django.shortcuts import render, redirect
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import now
@@ -11,8 +12,6 @@ import logging
 import time
 import json
 from .models import Article, Source
-
-
 
 
 logger = logging.getLogger(__name__)
@@ -27,31 +26,124 @@ def home(request):
         })
 
 def fetch_articles(request):
-    query = request.GET.get('q', '')  
-    endpoint = request.GET.get('endpoint', 'everything')
-    
-    if endpoint == 'everything':
-        url = f'https://newsapi.org/v2/everything?q={query}&apiKey={API_KEY}'
-    else:
-        url = f'https://newsapi.org/v2/top-headlines?country=us&apiKey={API_KEY}'
+    query = request.GET.get('q', '')
+    endpoint_param = request.GET.get('endpoint')
 
-    response = requests.get(url, timeout=10)
+    articles = fetch_articles_from_api(query=query, endpoint_param=endpoint_param)
+
+    return render(request, "main/fetched_articles.html", {
+        'articles': articles,
+    })
+
+def fetch_articles_from_api(query='', endpoint_param=None):
+    ENDPOINTS = {
+        'everything': 'everything',
+        'headlines': 'top-headlines',
+    }
+
+    query = (query or '').strip()
+
+    # choose endpoint headlines if query is empty
+    if endpoint_param == 'everything' and not query:
+        endpoint = 'top-headlines'
+    else:
+        endpoint = ENDPOINTS.get(endpoint_param, 'everything')
+
+    base_url = 'https://newsapi.org/v2/'
+    params = {'apiKey': API_KEY}
+
+    if endpoint == 'everything':
+        url = base_url + 'everything'
+        if query:
+            params['q'] = query
+    else:
+        url = base_url + 'top-headlines'
+        params['country'] = 'us'
+        if query:
+            params['q'] = query
+
+    response = requests.get(url, params=params, timeout=10)
     response.raise_for_status()
-    
     data = response.json()
     raw_articles = data.get('articles', [])
-    
+
     articles = []
     for a in raw_articles:
         article = normalize_article(a)
         if article:
             articles.append(article)
-    
+
     logger.info("Fetched %d articles", len(articles))
+    return articles
+
+@csrf_exempt
+@require_GET
+def fetch_and_save_headlines(request):
+    # optional secret key
+    if request.GET.get('key') != 'F3H7K9X2L1Q8Z5M0':
+        return JsonResponse({'error': 'unauthorized'}, status=401)
+
+    articles = fetch_articles_from_api(endpoint_param='headlines')
+
+    saved_count = 0
+    for a in articles:
+        # prevent duplicates
+        obj, created = Article.objects.update_or_create(
+            url=a['url'],
+            defaults=a
+        )
+        if created:
+            saved_count += 1
+
+    return JsonResponse({'saved': saved_count})
+
+# def fetch_articles(request):
+#     ENDPOINTS = {
+#         'everything': 'everything',
+#         'headlines': 'top-headlines',
+#     }
+#     query = request.GET.get('q', '').strip()
+#     endpoint_param = request.GET.get('endpoint')
     
-    return render(request, "main/fetched_articles.html", {
-        'articles': articles,
-    })
+#     # choose endpoint headlines if query is empty
+#     if endpoint_param == 'everything' and not query:
+#         endpoint = 'top-headlines'
+#     else:
+#         endpoint = ENDPOINTS.get(endpoint_param, 'everything')
+
+    
+#     base_url = 'https://newsapi.org/v2/'
+#     params = {
+#         'apiKey': API_KEY,
+#     }
+    
+#     if endpoint == 'everything':
+#         url = base_url + 'everything'
+#         if query:
+#             params['q'] = query
+#     else:
+#         url = base_url + 'top-headlines'
+#         params['country'] = 'us'
+#         if query:
+#             params['q'] = query
+        
+#     response = requests.get(url, params=params, timeout=10)
+#     response.raise_for_status()
+    
+#     data = response.json()
+#     raw_articles = data.get('articles', [])
+    
+#     articles = []
+#     for a in raw_articles:
+#         article = normalize_article(a)
+#         if article:
+#             articles.append(article)
+    
+#     logger.info("Fetched %d articles", len(articles))
+    
+#     return render(request, "main/fetched_articles.html", {
+#         'articles': articles,
+#     })
     
     
 def normalize_article(a):
