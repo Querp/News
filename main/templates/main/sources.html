@@ -15,19 +15,22 @@
 <div class="sources">
     {% for source in sources %}
     <div class="source">
-        <div class="name">{{ source.name }}</div>
+        {% if source.url_to_image %}
+            <img src="{{ source.url_to_image }}" alt="">
+        {% else %}
+        <img src="{% static 'main/missing_image.png' %}" alt="" />
+        {% endif %}
         <div class="body">
-            {% if source.url_to_image %}
-                <img src="{{ source.url_to_image }}" alt="">
-            {% else %}
-                <img src="{% static 'main/missing_image.png' %}" alt="" />
-            {% endif %}
-
-            <div class="category">{{ source.category }}</div>
-            <div class="country">{{ source.country|human_country }}</div>
-            <div class="language">{{ source.language|human_language }}</div>
-            <div class="description">{{ source.description }}</div>
+            <div class="title">
+                <div class="name">{{ source.name }}</div>
+                <div class="category">{{ source.category }}</div>
+            </div>
+            <div class="location">
+                <div class="language">{{ source.language|human_language }}</div>
+                <div class="country">{{ source.country|human_country }}</div>
+            </div>
         </div>
+        <div class="description">{{ source.description }}</div>
     </div>
     {% endfor %}
 </div>
