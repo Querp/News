@@ -8,24 +8,6 @@
 {% endblock %}
 
 {% block content %}
-
-<form method="post" action="{% url 'fetch_sources' %}">
-  {% csrf_token %}
-  <button type="submit">
-    Fetch news sources
-  </button>
-</form>
-
-<form method="post" action="{% url 'fetch_sources_images' %}"
-      onsubmit="return confirm('Fetch images for sources without logos?');">
-  {% csrf_token %}
-  <input type="hidden" name="admin_token" value="{{ ADMIN_SYNC_TOKEN }}">
-  <button type="submit">
-    Fetch source images
-  </button>
-</form>
-
-
 <div class="articles">
   <article class="saved-count">
     <p>{{ articles|length }} </p>
