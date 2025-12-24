@@ -15,4 +15,5 @@ jobs:
         with:
           url: ${{ secrets.FETCH_HEADLINES_URL }}
           method: GET
-          timeout: 60
+          timeout: 180000  # 3min
+          retry: 3
