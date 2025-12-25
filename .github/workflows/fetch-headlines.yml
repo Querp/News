@@ -3,8 +3,8 @@ name: Fetch Headlines
 on:
   schedule:
     # - cron: '0 * * * *'    # every hour
-    # - cron: '*/5 * * * *'  # every 5 minutes
-    - cron: '*/15 * * * *'  # every 5 minutes
+    - cron: '*/5 * * * *'  # every 5 minutes
+    # - cron: '*/15 * * * *'  # every 5 minutes
   workflow_dispatch: # allows manual trigger
 
 jobs:
