@@ -13,6 +13,17 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 @require_GET
 def fetch_and_save_headlines(request):
+    received_key = request.GET.get("key")
+    logger.info("Fetch job key received: %s", received_key)
+    
+    if received_key != settings.FETCH_SECRET_KEY:
+        logger.warning(
+            "Unauthorized key: %s != %s", received_key, settings.FETCH_SECRET_KEY
+        )
+        return JsonResponse({"error": "unauthorized"}, status=401)
+
+    
+    
     if request.GET.get("key") != settings.FETCH_SECRET_KEY:
         return JsonResponse({"error": "unauthorized"}, status=401)
 
