@@ -16,14 +16,22 @@ def fetch_and_save_headlines(request):
     if request.GET.get("key") != settings.FETCH_SECRET_KEY:
         return JsonResponse({"error": "unauthorized"}, status=401)
 
+    api_key = getattr(settings, "NEWS_API_KEY", None)
+    if not api_key:
+        logger.error("NEWS_API_KEY is missing in settings!")
+        return JsonResponse({"error": "missing_api_key"}, status=500)
+
     try:
         raw = fetch_articles(
-            api_key=settings.NEWS_API_KEY,
+            api_key=api_key,
             endpoint_param="headlines",
         )
-    except Exception:
-        logger.exception("NewsAPI fetch failed")
-        return JsonResponse({"error": "fetch_failed"}, status=500)
+    except Exception as e:
+        logger.exception("NewsAPI fetch failed: %s", e)
+        return JsonResponse({
+            "error": "fetch_failed",
+            "detail": str(e),
+        }, status=500)
 
     saved = updated = 0
 
