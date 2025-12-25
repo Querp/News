@@ -15,7 +15,7 @@ jobs:
       - name: Trigger Django fetch endpoint
         uses: fjogeleit/http-request-action@v1
         with:
-          url: ${{ secrets.FETCH_HEADLINES_URL }}
+          url: ${{ secrets.FETCH_HEADLINES_URL }}?key=${{ secrets.NEWSAPI_KEY }}
           method: GET
           timeout: 180000
           retry: 3
