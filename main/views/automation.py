@@ -27,9 +27,9 @@ def fetch_and_save_headlines(request):
     if request.GET.get("key") != settings.FETCH_SECRET_KEY:
         return JsonResponse({"error": "unauthorized"}, status=401)
 
-    api_key = getattr(settings, "NEWS_API_KEY", None)
+    api_key = getattr(settings, "NEWSAPI_KEY", None)
     if not api_key:
-        logger.error("NEWS_API_KEY is missing in settings!")
+        logger.error("NEWSAPI_KEY is missing in settings!")
         return JsonResponse({"error": "missing_api_key"}, status=500)
 
     try:
