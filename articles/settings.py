@@ -184,5 +184,5 @@ LOGGING = {
 }
 
 # NEWSAPI_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
-NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "")
+NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY", "") 
 FETCH_SECRET_KEY = os.environ.get("FETCH_SECRET_KEY", "")

@@ -15,12 +15,12 @@ logger = logging.getLogger(__name__)
 API_KEY = "1d288bcfb535403ca6f3603c5fdb0ce4"
 
 
-def home(request):
-    saved_articles = Article.objects.order_by('-published_at')
-    return render(request, "main/home.html", {
-        'saved_articles': saved_articles,
-        'fetched_articles': [],
-        })
+# def home(request):
+#     saved_articles = Article.objects.order_by('-published_at')
+#     return render(request, "main/home.html", {
+#         'saved_articles': saved_articles,
+#         'fetched_articles': [],
+#         })
 
 def fetch_articles(request):
     query = request.GET.get('q', '')
@@ -72,7 +72,6 @@ def fetch_articles_from_api(query='', endpoint_param=None):
 
     logger.info("Fetched %d articles", len(articles))
     return articles
-
 
 
 def normalize_article(a):

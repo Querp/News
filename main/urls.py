@@ -1,12 +1,17 @@
 from django.urls import path
-from . import views
+from .views.articles import (
+    my_articles,
+    fetch_articles_view,
+    save_article,
+)
+from .views.sources import sources
+from .views.automation import fetch_and_save_headlines
 
 urlpatterns = [
     # path("", views.home, name="home"),
-    path('', views.my_articles, name='my_articles'),
-    path('my_articles/', views.my_articles, name='my_articles'),
-    path('fetch/', views.fetch_articles, name='fetch_articles'),
-    path('save/', views.save_article, name='save_article'),
-    path('sources/', views.sources, name='sources'),
-    path("fetch_and_save_headlines/", views.fetch_and_save_headlines, name="fetch_and_save_headlines"),
+    path('', my_articles, name='my_articles'),
+    path('fetch/', fetch_articles_view, name='fetch_articles'),
+    path('save/', save_article, name='save_article'),
+    path('sources/', sources, name='sources'),
+    path("fetch_and_save_headlines/", fetch_and_save_headlines, name="fetch_and_save_headlines"),
 ]
