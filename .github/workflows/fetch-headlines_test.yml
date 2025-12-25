@@ -2,19 +2,20 @@ name: Fetch Headlines Test
 
 on:
   schedule:
-    # - cron: '0 * * * *'    # every hour
-    - cron: '*/5 * * * *'  # every 5 minutes
-    # - cron: '*/15 * * * *'  # every 5 minutes
+    - cron: '*/15 * * * *'  # every 15 minutes
   workflow_dispatch: # allows manual trigger
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
+      - name: Show current UTC time
+        run: date -u
+
       - name: Trigger Django fetch endpoint
         uses: fjogeleit/http-request-action@v1
         with:
           url: ${{ secrets.FETCH_HEADLINES_URL }}
           method: GET
-          timeout: 180000  # 3min
+          timeout: 180000
           retry: 3
