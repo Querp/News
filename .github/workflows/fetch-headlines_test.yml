@@ -1,4 +1,4 @@
-name: Fetch Headlines
+name: Fetch Headlines Test
 
 on:
   schedule:
