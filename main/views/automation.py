@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 @csrf_exempt
 @require_GET
 def fetch_and_save_headlines(request):
-    if request.GET.get("key") != settings.FETCH_SECRET_KEY:
+    if request.GET.get("key") != settings.NEWSAPI_KEY:
         return JsonResponse({"error": "unauthorized"}, status=401)
 
     api_key = getattr(settings, "NEWS_API_KEY", None)
