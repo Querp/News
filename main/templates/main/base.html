@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{% static 'main/css/nav.css' %}" />
     <link rel="stylesheet" href="{% static 'main/css/sources.css' %}" />
     <link rel="stylesheet" href="{% static 'main/css/articles.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/world_map.css' %}" />
   </head> 
   <body>
     {% csrf_token %}
@@ -27,6 +28,9 @@
         </div>
         <div class="ui home">
           <a href="{% url 'sources' %}"><span class="material-symbols-outlined">umbrella</span></a>
+        </div>
+        <div class="ui world-map-ui">
+          <a href="{% url 'world_map' %}"><span class="material-symbols-outlined">map</span></a>
         </div>
         <div class="search">
           <input id="search-toggle" type="checkbox" name="search" />

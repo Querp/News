@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block title %}
+  World Map
+{% endblock %}
+
+{% block content %}
+
+<div class="world-map">
+  <img id="world-map-img" src={% static "main/images/earth_map.jpg" %} alt="">
+  <div class="locations">
+    {% for article in articles %}
+      {% for loc in article.all_locations %}
+        <div class="location" style="top:{{ loc.top_percent }}%; left:{{ loc.left_percent }}%">
+          {{ loc.city }}, {{ loc.state }}, {{ loc.country }}
+          {% comment %} x {{ loc.longitude|floatformat:2 }}, y: {{ loc.latitude|floatformat:2 }}  {% endcomment %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+{% if loc.is_primary %}★ Primary{% endif %}
