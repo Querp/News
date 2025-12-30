@@ -1,25 +1,22 @@
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
+import logging
 
-# REQUIRED by Nominatim usage policy
+logging.basicConfig(level=logging.INFO)
+
 _geolocator = Nominatim(user_agent="thenews-location-service")
 
-# Respect rate limits (very important)
 _geocode = RateLimiter(
     _geolocator.geocode,
-    min_delay_seconds=1,
-    swallow_exceptions=True,
+    min_delay_seconds=1,  # Respect Nominatim policy
+    max_retries=3,
+    error_wait_seconds=2,  # wait a bit after an error
+    swallow_exceptions=False  # we want to see what fails
 )
 
-# Simple in-process cache (replace later)
 _cache: dict[str, dict | None] = {}
 
-
 def geocode_location(name: str) -> dict | None:
-    """
-    Normalize a location string into structured geographic data.
-    Returns None if not resolvable.
-    """
     if not name:
         return None
 
@@ -27,23 +24,30 @@ def geocode_location(name: str) -> dict | None:
     if key in _cache:
         return _cache[key]
 
-    location = _geocode(name, addressdetails=True)
-    if not location:
+    try:
+        location = _geocode(name, timeout=15, addressdetails=True)
+        if not location:
+            _cache[key] = None
+            logging.info(f"Location not found: {name}")
+            return None
+
+        address = location.raw.get("address", {})
+
+        result = {
+            "country": address.get("country"),
+            "country_code": address.get("country_code"),
+            "state": address.get("state"),
+            "city": address.get("city")
+            or address.get("town")
+            or address.get("village"),
+            "lat": location.latitude,
+            "lon": location.longitude,
+        }
+
+        _cache[key] = result
+        return result
+
+    except Exception as e:
+        logging.warning(f"Geocoding failed for '{name}': {e}")
         _cache[key] = None
         return None
-
-    address = location.raw.get("address", {})
-
-    result = {
-        "country": address.get("country"),
-        "country_code": address.get("country_code"),
-        "state": address.get("state"),
-        "city": address.get("city")
-        or address.get("town")
-        or address.get("village"),
-        "lat": location.latitude,
-        "lon": location.longitude,
-    }
-
-    _cache[key] = result
-    return result
