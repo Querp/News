@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.conf import settings
 import logging
+from threading import Thread
 
 from ..models import Article
 from ..services.newsapi import fetch_articles
@@ -76,5 +77,7 @@ def extract_locations_view(request):
     key = request.GET.get("key")
     if key != settings.FETCH_SECRET_KEY:
         return HttpResponseForbidden("Invalid key")
-    Command().handle()
-    return JsonResponse({"status": "locations extracted"})
+    
+    # Run extraction in background
+    Thread(target=Command().handle).start()
+    return JsonResponse({"status": "locations extraction started"})
