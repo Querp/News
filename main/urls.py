@@ -5,7 +5,7 @@ from .views.articles import (
     save_article,
 )
 from .views.sources import sources
-from .views.automation import fetch_and_save_headlines
+from .views.automation import fetch_and_save_headlines, extract_locations_view
 
 urlpatterns = [
     # path("", views.home, name="home"),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('save/', save_article, name='save_article'),
     path('sources/', sources, name='sources'),
     path("fetch_and_save_headlines/", fetch_and_save_headlines, name="fetch_and_save_headlines"),
+    path("extract-locations/", extract_locations_view),
 ]

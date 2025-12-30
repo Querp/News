@@ -19,3 +19,10 @@ jobs:
           method: GET
           timeout: 180000
           retry: 3
+      - name: Trigger extract locations endpoint
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.BASE_URL }}/extract-locations/?key=${{ secrets.FETCH_SECRET_KEY }}
+          method: GET
+          timeout: 180000
+          retry: 3

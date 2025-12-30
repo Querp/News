@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.conf import settings
+from django.db.models import Prefetch
 import json
 
 from ..models import Article
@@ -28,7 +29,9 @@ def fetch_articles_view(request):
 
 
 def my_articles(request):
-    articles = Article.objects.order_by("-published_at")
+    articles = Article.objects.order_by("-published_at").prefetch_related(
+        Prefetch("locations", to_attr="all_locations")
+    )
     return render(request, "main/my_articles.html", {
         "articles": articles
     })

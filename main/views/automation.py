@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.conf import settings
@@ -7,6 +7,8 @@ import logging
 from ..models import Article
 from ..services.newsapi import fetch_articles
 from ..utils.normalization import normalize_article
+from main.management.commands.extract_locations import Command
+
 
 logger = logging.getLogger(__name__)
 
@@ -69,3 +71,10 @@ def fetch_and_save_headlines(request):
         "saved": saved,
         "updated": updated,
     })
+
+def extract_locations_view(request):
+    key = request.GET.get("key")
+    if key != settings.FETCH_SECRET_KEY:
+        return HttpResponseForbidden("Invalid key")
+    Command().handle()
+    return JsonResponse({"status": "locations extracted"})

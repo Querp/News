@@ -18,9 +18,9 @@
         <a href="{{ article.url }}" target="_blank">
           <div class="header">
             {% if article.url_to_image %}
-                <img src="{{ article.url_to_image }}" alt="" />
+              <img src="{{ article.url_to_image }}" alt="" />
             {% else %}
-                <img src={% static "main/missing_image.png" %} alt="" />
+              <img src={% static "main/missing_image.png" %} alt="" />
             {% endif %}
             <p class="date">{{ article.published_at|human_date }}</p>
           </div>
@@ -29,6 +29,15 @@
             <p class="source-name">{{ article.source_id }}</p>
             <p class="description">{{ article.description }}</p>
             <p class="content">{{ article.content }}</p> 
+            <ul>
+              {% for loc in article.all_locations %}
+                <li>
+                  {{ loc.city }}, {{ loc.state }}, {{ loc.country }}
+                  (lat: {{ loc.latitude }}, lon: {{ loc.longitude }})
+                  {% if loc.is_primary %}★ Primary{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
           </div>
         </a>
     </article>

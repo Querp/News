@@ -41,3 +41,25 @@ class Source(models.Model):
     def __str__(self):
         return self.name
     
+class ArticleLocation(models.Model):
+    article = models.ForeignKey("main.Article", on_delete=models.CASCADE, related_name="locations")
+    country = models.CharField(max_length=100)  
+    country_code = models.CharField(max_length=2)
+    state = models.CharField(max_length=100, null=True, blank=True) 
+    city = models.CharField(max_length=200, null=True, blank=True)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    confidence = models.FloatField(help_text="0–1 confidence score")
+    is_primary = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["country_code"]),
+            models.Index(fields=["latitude", "longitude"]),
+        ]
+
+    def __str__(self):
+        label = self.city or self.state or self.country
+        return f"{label} ({self.country_code})"
