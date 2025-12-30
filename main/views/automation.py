@@ -51,10 +51,16 @@ def fetch_and_save_headlines(request):
         if not article:
             continue
 
-        obj, created = Article.objects.update_or_create(
+        obj, created = Article.objects.get_or_create(
             url=article["url"],
-            defaults=article,
+            defaults={
+                **article,
+                "origin": Article.Origin.AUTO,
+            },
         )
+        if not created:
+            Article.objects.filter(pk=obj.pk).update(**article)
+            
         saved += created
         updated += not created
 

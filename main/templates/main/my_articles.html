@@ -14,7 +14,7 @@
     <p>Saved Articles</p>
   </article>
   {% for article in articles %}
-    <article>
+    <article class="{{ article.origin }}">
         <a href="{{ article.url }}" target="_blank">
           <div class="header">
             {% if article.url_to_image %}

@@ -1,6 +1,10 @@
 from django.db import models
 
 class Article(models.Model):
+    class Origin(models.TextChoices):
+        AUTO = "autoFetch", "Auto fetch"
+        MANUAL = "manualFetch", "Manual fetch"
+        
     title = models.CharField(max_length=500)
     author = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
@@ -9,6 +13,7 @@ class Article(models.Model):
     source_id = models.CharField(max_length=100, null=True, blank=True)
     url = models.URLField(max_length=1000, unique=True)
     url_to_image = models.URLField(max_length=1000, null=True, blank=True)
+    origin = models.CharField(max_length=20, choices=Origin.choices, default=Origin.AUTO)
 
     def __str__(self):
         return self.title

@@ -50,6 +50,7 @@ def save_article(request):
         published_at=data['published_at'],
         source_id=data.get('source_id'),
         url_to_image=data.get('url_to_image'),
+        origin=Article.Origin.MANUAL,
     )
 
     return JsonResponse({'status': 'saved'})
