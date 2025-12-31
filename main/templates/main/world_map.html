@@ -29,7 +29,7 @@ World Map
             {% for loc in article.all_locations %}
                 <div class="detail" id="location-detail-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
                     <a href="#" class="close-button">×</a>
-                    <img src="{{ article.url_to_image }}" alt="">
+                    <img class="article-img" src="{{ article.url_to_image }}" alt="">
                     <h3 class="title">{{ article.title }}</h3>
                 </div>
             {% endfor %}

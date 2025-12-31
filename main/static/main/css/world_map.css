@@ -1,10 +1,14 @@
 .world-map {
     width: fit-content;
+    /* height: fit-content; */
     /* width: 100%; */
-    height: 75vh;
+    /* height: 75vh; */
+    max-height: 75vh;
     position: relative;
     margin-inline: auto;
-    background: red;
+    /* background: red; */
+    overflow: visible;
+    overflow-x: hidden;
 
     .map-image {
         display: block;
@@ -34,7 +38,7 @@
 
         .marker {
             background: red;
-            width: 9px;
+            width: 5px;
             aspect-ratio: 1;
             box-shadow: 0 0 0 1px rgb(38, 38, 38);
             border-radius: 999rem;
@@ -46,12 +50,12 @@
 
         .body {
             position: absolute;
-            top: 5px;
+            top: 4px;
             white-space: nowrap;
             transform: translate(-50%);
 
-            color: #000000;
-            background: #ffffff;
+            color: #fff;
+            background: #000;
             box-shadow: 0 0 0 1px rgba(49, 49, 49, 0.56), 0 0 3px 0 rgba(49, 49, 49, 0.732);
             padding: 1px 4px;
             /* display: none; */
@@ -65,7 +69,7 @@
             z-index: 2;
             opacity: 1 !important;
             cursor: pointer;
-            /* font-size: 1rem; */
+            font-size: 1rem;
             
             .marker {
                 /* background: rgba(89, 89, 89, 0.406); */
@@ -75,30 +79,32 @@
 }
 
 .location-hover-details {
-
+    position: absolute;
+    inset: 0;
+    
     .detail {
+        height: 100%;
+        background: rgba(191, 191, 191, 0.598);
         display: none;
 
-        img {
-            position: absolute;
-            /* top: 30px; */
+        .article-img {
+            /* position: absolute; */
             display: block;
-            inset: 0;
+            /* inset: 0; */
+            /* top: 30px; */
     
-            /* width: 650px; */
-            /* width: calc(100% - 10rem); */
             width: 100%;
             max-width: 100%;
-            /* max-width: calc(100% - 10rem); */
             height: 100%;
-            /* height: 200px; */
             object-fit: cover;
-            /* transform: translate(-50%); */
             transition: all 0.5s 0.1s;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.9;
-            padding: 30vh 5vw 0;
+            /* opacity: 0.9; */
+            padding: 30vh 30vh 10px;
+            box-shadow: 2px 2px 15px 0 black;
+            
+            
         }
     
         .title {
