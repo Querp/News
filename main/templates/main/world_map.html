@@ -3,35 +3,39 @@
 
 
 {% block title %}
-  World Map
+World Map
 {% endblock %}
 
 {% block content %}
 
 <div class="world-map">
-  <img id="world-map-img" src={% static "main/images/earth_map.jpg" %} alt="">
-  <div class="locations">
-    {% for article in articles %}
-      {% for loc in article.all_locations %}
-        <div class="location" style="top:{{ loc.top_percent }}%; left:{{ loc.left_percent }}%">
-          <img src="{{ article.url_to_image }}" alt="">
-          <h3 class="title">{{ article.title }}</h3>
-          <div class="marker"></div>
-          <div class="body">
-            {{ loc.city }}, {{ loc.state }}, {{ loc.country }}
-          </div>
-          {% comment %} x {{ loc.longitude|floatformat:2 }}, y: {{ loc.latitude|floatformat:2 }}  {% endcomment %}
-        </div>
-      {% endfor %}
-    {% endfor %}
-  </div>
+    <img class="map-image" id="world-map-img" src={% static "main/images/earth_map.jpg" %} alt="">
+    <div class="locations">
+        {% for article in articles %}
+            {% for loc in article.all_locations %}
+                <a class="location" 
+                    style="top:{{ loc.top_percent }}%; left:{{ loc.left_percent }}%"
+                    href="#location-detail-{{ forloop.parentloop.counter }}-{{ forloop.counter }}"
+                >
+                    <div class="marker"></div>
+                    <div class="body">{{ loc.city }}, {{ loc.state }}, {{ loc.country }}</div>
+                    <div class="coordinates">x {{ loc.longitude|floatformat:2 }}, y: {{ loc.latitude|floatformat:2 }} </div>
+                </a>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    <div class="location-hover-details">
+        {% for article in articles %}
+            {% for loc in article.all_locations %}
+                <div class="detail" id="location-detail-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
+                    <a href="#" class="close-button">×</a>
+                    <img src="{{ article.url_to_image }}" alt="">
+                    <h3 class="title">{{ article.title }}</h3>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+    </div>
 </div>
 
 {% endblock %}
-
-
-
-
-
-
-{% if loc.is_primary %}★ Primary{% endif %}
