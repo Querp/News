@@ -14,7 +14,12 @@
     {% for article in articles %}
       {% for loc in article.all_locations %}
         <div class="location" style="top:{{ loc.top_percent }}%; left:{{ loc.left_percent }}%">
-          {{ loc.city }}, {{ loc.state }}, {{ loc.country }}
+          <img src="{{ article.url_to_image }}" alt="">
+          <h3 class="title">{{ article.title }}</h3>
+          <div class="marker"></div>
+          <div class="body">
+            {{ loc.city }}, {{ loc.state }}, {{ loc.country }}
+          </div>
           {% comment %} x {{ loc.longitude|floatformat:2 }}, y: {{ loc.latitude|floatformat:2 }}  {% endcomment %}
         </div>
       {% endfor %}
