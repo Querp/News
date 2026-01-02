@@ -41,21 +41,21 @@
     <div class="country-selector selector">
         {% for code, label in countries %}
             <input id="{{ code }}" class="country-input" type="checkbox" data-value="{{ code }}"
-            {% if code == "us" %} checked {% endif %}
-            {% if code == "nl" %} checked {% endif %}>
+            {% if code in selected_countries %}checked{% endif %}>
             <label for="{{ code }}" class="country-label" data-value="{{ code }}">{{ label }}</label>
         {% endfor %}
     </div>
     <div class="category-selector selector">
         {% for category in categories %}
-            <input id="{{ category }}" class="category-input" type="checkbox" data-value="{{ code }}">
+            <input id="{{ category }}" class="category-input" type="checkbox" data-value="{{ code }}"
+            {% if category in selected_categories %}checked{% endif %}>
             <label for="{{ category }}" class="category-label" data-value="{{ category }}">{{ category }}</label>
         {% endfor %}
-
     </div>
     <div class="source-selector selector">
         {% for source in sources %}
-            <input id="{{ source.api_id }}" class="source-input" type="checkbox" data-value="">
+            <input id="{{ source.api_id }}" class="source-input" type="checkbox" data-value=""
+            {% if source.name in selected_sources %}checked{% endif %}>
             <label for="{{ source.api_id }}" class="source-label" data-value="{{ source.api_id }}">{{ source.name }}</label>
         {% endfor %}
     </div>

@@ -63,3 +63,10 @@ class ArticleLocation(models.Model):
     def __str__(self):
         label = self.city or self.state or self.country
         return f"{label} ({self.country_code})"
+    
+class GlobalFetchPreferences(models.Model):
+    singleton = models.BooleanField(default=True, unique=True)
+
+    countries = models.JSONField(default=list, blank=True)
+    categories = models.JSONField(default=list, blank=True)
+    sources = models.JSONField(default=list, blank=True)
