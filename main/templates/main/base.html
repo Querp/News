@@ -18,11 +18,15 @@
     <link rel="stylesheet" href="{% static 'main/css/sources.css' %}" />
     <link rel="stylesheet" href="{% static 'main/css/articles.css' %}" />
     <link rel="stylesheet" href="{% static 'main/css/world_map.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/settings/settings.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/settings/country.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/settings/category.css' %}" />
+    <link rel="stylesheet" href="{% static 'main/css/settings/source.css' %}" />
   </head> 
   <body>
     {% csrf_token %}
 
-    <nav>
+    <nav class="main-nav">
       <div class="body">
         <div class="ui home">
           <a href="{% url 'my_articles' %}"><span class="material-symbols-outlined">house</span></a>
@@ -32,6 +36,9 @@
         </div>
         <div class="ui world-map-ui">
           <a href="{% url 'world_map' %}"><span class="material-symbols-outlined">map</span></a>
+        </div>
+        <div class="ui settings">
+          <a href="{% url 'settings' %}"><span class="material-symbols-outlined">settings</span></a>
         </div>
         <div class="search">
           <input id="search-toggle" type="checkbox" name="search" />

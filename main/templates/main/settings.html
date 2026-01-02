@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load human_date %}
+
+{% block title %}
+  Fetched Articles
+{% endblock %}
+
+{% block content %}
+<div class="settings-header">
+    <h3>Settings</h3>
+    <nav class="settings-nav">
+        <button class="show">Configure Auto-Fetch</button>
+        <button>Fetch Log</button>
+    </nav>
+
+</div>
+
+<div class="settings-main">
+
+    <input class="top-level-radio" id="country-and-category" type="radio" name="top-level-radio" checked>
+    <label class="country-and-category-label" for="country-and-category">
+        <div class="title">Country & Category</div>
+        <div class="body">
+            <div class="toggle">
+                <input id="country-toggle" type="checkbox" checked>
+                <label for="country-toggle">Country</label>
+            </div>
+            <div class="toggle">
+                <input id="category-toggle" type="checkbox">
+                <label for="category-toggle">Category</label>
+            </div>
+        </div>
+    </label>
+
+    <input class="top-level-radio" id="source" type="radio" name="top-level-radio">
+    <label for="source">Source</label>
+</div>
+
+<div class="setting-selectors">
+    <div class="country-selector selector">
+        {% for code, label in countries %}
+            <input id="{{ code }}" class="country-input" type="checkbox" data-value="{{ code }}"
+            {% if code == "us" %} checked {% endif %}
+            {% if code == "nl" %} checked {% endif %}>
+            <label for="{{ code }}" class="country-label" data-value="{{ code }}">{{ label }}</label>
+        {% endfor %}
+    </div>
+    <div class="category-selector selector">
+        {% for category in categories %}
+            <input id="{{ category }}" class="category-input" type="checkbox" data-value="{{ code }}">
+            <label for="{{ category }}" class="category-label" data-value="{{ category }}">{{ category }}</label>
+        {% endfor %}
+
+    </div>
+    <div class="source-selector selector">
+        {% for source in sources %}
+            <input id="{{ source.api_id }}" class="source-input" type="checkbox" data-value="">
+            <label for="{{ source.api_id }}" class="source-label" data-value="{{ source.api_id }}">{{ source.name }}</label>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

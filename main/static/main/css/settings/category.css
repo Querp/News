@@ -1,0 +1,10 @@
+.category-selector {
+    font-size: 1.25rem;
+    text-transform: capitalize;
+    container-type: inline-size;
+    column-width: 14rem;
+    column-gap: 1px;
+    /* column-count: 2;  */
+    /* column-rule: 1px solid #ddd; */
+    /* max-width: 1200px; */
+}
