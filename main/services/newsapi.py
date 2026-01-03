@@ -21,6 +21,8 @@ def fetch_articles(
     Fetch articles from NewsAPI, filtered by optional countries, categories, and sources.
     Supports multiple countries/categories by merging results.
     """
+    api_calls = 0
+    
     query = (query or "").strip()
     endpoint = ENDPOINTS.get(endpoint_param, "everything")
     countries = countries or []
@@ -41,6 +43,7 @@ def fetch_articles(
             response = requests.get(BASE_URL + endpoint, params=params, timeout=30)
             response.raise_for_status()
             articles.extend(response.json().get("articles", []))
+            api_calls += 1
         except Exception as e:
             logger.exception("Error fetching articles from everything: %s", e)
 
@@ -69,6 +72,7 @@ def fetch_articles(
                     response = requests.get(BASE_URL + endpoint, params=params, timeout=30)
                     response.raise_for_status()
                     articles.extend(response.json().get("articles", []))
+                    api_calls += 1
                 except Exception as e:
                     logger.exception(
                         "Error fetching top-headlines for country=%s category=%s: %s",
@@ -77,4 +81,4 @@ def fetch_articles(
                         e,
                     )
 
-    return articles
+    return articles, api_calls

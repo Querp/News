@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 import json
-from ..models import Article, Source, GlobalFetchPreferences
+from ..models import Article, Source, GlobalFetchPreferences, FetchRun
 from ..services.newsapi import fetch_articles
 from ..utils.normalization import normalize_article
 from main.constants.newsapi import COUNTRY_LABELS, CATEGORIES
@@ -72,3 +72,8 @@ def update_preferences(request):
     prefs.save()
 
     return JsonResponse({"success": True, "type": type_, "value": value, "added": add})
+
+
+def fetch_log_view(request):
+    runs = FetchRun.objects.order_by("-started_at")[:100]
+    return render(request, "fetch_log.html", {"runs": runs})

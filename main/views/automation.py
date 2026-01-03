@@ -2,10 +2,11 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 from django.conf import settings
+from django.utils import timezone
 import logging
 from threading import Thread
 
-from ..models import Article, GlobalFetchPreferences
+from ..models import Article, GlobalFetchPreferences, FetchRun
 from ..services.newsapi import fetch_articles
 from ..utils.normalization import normalize_article
 from main.management.commands.extract_locations import Command
@@ -37,10 +38,19 @@ def fetch_and_save_headlines(request):
     prefs, _ = GlobalFetchPreferences.objects.get_or_create(
     id=1,
     defaults={"countries": ["us", "nl"], "categories": [], "sources": []},
-)
+    )
+    
+    fetch_run = FetchRun.objects.create(
+    endpoint="headlines",
+    params={
+        "countries": prefs.countries,
+        "categories": prefs.categories,
+        "sources": prefs.sources,
+    },
+    )
 
     try:
-        raw = fetch_articles(
+        raw, api_calls = fetch_articles(
             api_key=api_key,
             endpoint_param="headlines",
             countries = prefs.countries or ["us"],  # default fallback
@@ -48,6 +58,11 @@ def fetch_and_save_headlines(request):
             sources = prefs.sources or None
         )
     except Exception as e:
+        fetch_run.status = FetchRun.Status.FAILED
+        fetch_run.error = str(e)
+        fetch_run.finished_at = timezone.now()
+        fetch_run.save()
+    
         logger.exception("NewsAPI fetch failed: %s", e)
         return JsonResponse({
             "error": "fetch_failed",
@@ -73,6 +88,14 @@ def fetch_and_save_headlines(request):
             
         saved += created
         updated += not created
+        
+    fetch_run.api_calls = api_calls
+    fetch_run.fetched = len(raw)
+    fetch_run.saved = saved
+    fetch_run.updated = updated
+    fetch_run.status = FetchRun.Status.SUCCESS
+    fetch_run.finished_at = timezone.now()
+    fetch_run.save()
 
     return JsonResponse({
         "fetched": len(raw),

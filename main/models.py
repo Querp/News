@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 
 class Article(models.Model):
     class Origin(models.TextChoices):
@@ -17,6 +19,7 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
 
 class Source(models.Model):
     CATEGORY_CHOICES = [
@@ -40,7 +43,8 @@ class Source(models.Model):
 
     def __str__(self):
         return self.name
-    
+   
+ 
 class ArticleLocation(models.Model):
     article = models.ForeignKey("main.Article", on_delete=models.CASCADE, related_name="locations")
     country = models.CharField(max_length=100)  
@@ -64,9 +68,42 @@ class ArticleLocation(models.Model):
         label = self.city or self.state or self.country
         return f"{label} ({self.country_code})"
     
+
 class GlobalFetchPreferences(models.Model):
     singleton = models.BooleanField(default=True, unique=True)
 
     countries = models.JSONField(default=list, blank=True)
     categories = models.JSONField(default=list, blank=True)
     sources = models.JSONField(default=list, blank=True)
+
+
+class FetchRun(models.Model):
+    class Status(models.TextChoices):
+        STARTED = "started"
+        SUCCESS = "success"
+        FAILED = "failed"
+
+    started_at = models.DateTimeField(default=timezone.now)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    endpoint = models.CharField(max_length=50)  # headlines / everything
+    params = models.JSONField()  # countries, categories, sources, query, etc
+
+    api_calls = models.PositiveIntegerField(default=0)
+
+    fetched = models.PositiveIntegerField(default=0)
+    saved = models.PositiveIntegerField(default=0)
+    updated = models.PositiveIntegerField(default=0)
+
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.STARTED
+    )
+    error = models.TextField(blank=True)
+
+    def duration_seconds(self):
+        if self.finished_at:
+            return (self.finished_at - self.started_at).total_seconds()
+        return None
+
+    def __str__(self):
+        return f"{self.endpoint} @ {self.started_at:%Y-%m-%d %H:%M}"
