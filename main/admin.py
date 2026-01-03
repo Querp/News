@@ -5,16 +5,14 @@ from .models import Article
 from .models import Source
 from .models import ArticleLocation
 from .models import GlobalFetchPreferences
+from .models import FetchRun
+
 
 admin.site.register(Article)
 admin.site.register(Source)
 admin.site.register(ArticleLocation)
-# admin.site.register(GlobalFetchPreferences)
+admin.site.register(FetchRun)
 
-# @admin.register(GlobalFetchPreferences)
-# class GlobalFetchPreferencesAdmin(admin.ModelAdmin):
-#     list_display = ("id",)
-    
 @admin.register(GlobalFetchPreferences)
 class GlobalFetchPreferencesAdmin(admin.ModelAdmin):
     formfield_overrides = {
