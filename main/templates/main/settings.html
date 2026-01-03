@@ -64,9 +64,37 @@
     </div>
 </div>
 
+<div class="fetch-log">
+    <div class="title">Fetch Logs</div>
+    {% for fetchRun in fetchRuns %}
+    <div>{{ fetchRun.started_at }}</div>
+    <div>{{ fetchRun.finished_at }}</div>
+    <div>{{ fetchRun.duration_seconds }}</div>
+    <div>{{ fetchRun.endpoint }}</div>
+    <div>{{ fetchRun.params }}</div>
+    <div>{{ fetchRun.api_calls }}</div>
+    <div>{{ fetchRun.fetched }}</div>
+    <div>{{ fetchRun.saved }}</div>
+    <div>{{ fetchRun.updated }}</div>
+    <div>{{ fetchRun.status }}</div>
+    <div>{{ fetchRun.error }}</div>
+    {% endfor %}
+</div>
+
+
 {% endblock %}
 
 
 {% block scripts %}
     <script src="{% static 'main/js/update_globalFetchPreferences.js' %}" defer></script>
 {% endblock %}
+
+    error = models.TextField(blank=True)
+
+    def duration_seconds(self):
+        if self.finished_at:
+            return (self.finished_at - self.started_at).total_seconds()
+        return None
+
+    def __str__(self):
+        return f"{self.endpoint} @ {self.started_at:%Y-%m-%d %H:%M}"
