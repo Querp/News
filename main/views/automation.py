@@ -5,13 +5,14 @@ from django.conf import settings
 import logging
 from threading import Thread
 
-from ..models import Article
+from ..models import Article, GlobalFetchPreferences
 from ..services.newsapi import fetch_articles
 from ..utils.normalization import normalize_article
 from main.management.commands.extract_locations import Command
 
 
 logger = logging.getLogger(__name__)
+
 
 @csrf_exempt
 @require_GET
@@ -24,8 +25,6 @@ def fetch_and_save_headlines(request):
             "Unauthorized key: %s != %s", received_key, settings.FETCH_SECRET_KEY
         )
         return JsonResponse({"error": "unauthorized"}, status=401)
-
-    
     
     if request.GET.get("key") != settings.FETCH_SECRET_KEY:
         return JsonResponse({"error": "unauthorized"}, status=401)
@@ -34,11 +33,19 @@ def fetch_and_save_headlines(request):
     if not api_key:
         logger.error("NEWSAPI_KEY is missing in settings!")
         return JsonResponse({"error": "missing_api_key"}, status=500)
+    
+    prefs, _ = GlobalFetchPreferences.objects.get_or_create(
+    id=1,
+    defaults={"countries": ["us", "nl"], "categories": [], "sources": []},
+)
 
     try:
         raw = fetch_articles(
             api_key=api_key,
             endpoint_param="headlines",
+            countries = prefs.countries or ["us"],  # default fallback
+            categories = prefs.categories or None,
+            sources = prefs.sources or None
         )
     except Exception as e:
         logger.exception("NewsAPI fetch failed: %s", e)

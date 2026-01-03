@@ -1,7 +1,5 @@
 import requests
 import logging
-from django.utils.dateparse import parse_datetime
-from django.utils.timezone import now
 
 logger = logging.getLogger(__name__)
 
@@ -11,25 +9,72 @@ ENDPOINTS = {
     "headlines": "top-headlines",
 }
 
-def fetch_articles(api_key, query="", endpoint_param="everything"):
+def fetch_articles(
+    api_key,
+    query="",
+    endpoint_param="everything",
+    countries=None,
+    categories=None,
+    sources=None,
+):
+    """
+    Fetch articles from NewsAPI, filtered by optional countries, categories, and sources.
+    Supports multiple countries/categories by merging results.
+    """
     query = (query or "").strip()
+    endpoint = ENDPOINTS.get(endpoint_param, "everything")
+    countries = countries or []
+    categories = categories or []
+    sources = sources or []
 
-    if endpoint_param == "everything" and not query:
-        endpoint = "top-headlines"
-    else:
-        endpoint = ENDPOINTS.get(endpoint_param, "everything")
+    articles = []
 
-    params = {"apiKey": api_key}
-    url = BASE_URL + endpoint
-
-    if endpoint == "everything" and query:
-        params["q"] = query
-    elif endpoint == "top-headlines":
-        params["country"] = "us"
+    # EVERYTHING endpoint
+    if endpoint == "everything":
+        params = {"apiKey": api_key}
         if query:
             params["q"] = query
+        if sources:
+            params["sources"] = ",".join(sources)
 
-    response = requests.get(url, params=params, timeout=30)
-    response.raise_for_status()
+        try:
+            response = requests.get(BASE_URL + endpoint, params=params, timeout=30)
+            response.raise_for_status()
+            articles.extend(response.json().get("articles", []))
+        except Exception as e:
+            logger.exception("Error fetching articles from everything: %s", e)
 
-    return response.json().get("articles", [])
+    # TOP-HEADLINES endpoint
+    elif endpoint == "top-headlines":
+        # NewsAPI only allows 1 country and 1 category per request
+        # Loop over all combinations
+        if not countries:
+            countries = [None]
+        if not categories:
+            categories = [None]
+
+        for country in countries:
+            for category in categories:
+                params = {"apiKey": api_key}
+                if country:
+                    params["country"] = country
+                if category:
+                    params["category"] = category
+                if sources:
+                    params["sources"] = ",".join(sources)
+                if query:
+                    params["q"] = query
+
+                try:
+                    response = requests.get(BASE_URL + endpoint, params=params, timeout=30)
+                    response.raise_for_status()
+                    articles.extend(response.json().get("articles", []))
+                except Exception as e:
+                    logger.exception(
+                        "Error fetching top-headlines for country=%s category=%s: %s",
+                        country,
+                        category,
+                        e,
+                    )
+
+    return articles
