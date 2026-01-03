@@ -8,7 +8,7 @@
 
 {% block content %}
 <div class="settings-header">
-    <h3>Settings</h3>
+    {% comment %} <h3>Settings</h3> {% endcomment %}
     <nav class="settings-nav">
         <button class="show">Configure Auto-Fetch</button>
         <button>Fetch Log</button>
@@ -34,31 +34,39 @@
     </label>
 
     <input class="top-level-radio" id="source" type="radio" name="top-level-radio">
-    <label for="source">Source</label>
+    <label class="source-label" for="source">Source</label>
 </div>
 
-<div class="setting-selectors">
-    <div class="country-selector selector">
+<div class="setting-selectors" id="setting-selectors">
+    <div class="country-selector selector" id="country-selector">
+        <div class="title">Country</div>
         {% for code, label in countries %}
-            <input id="{{ code }}" class="country-input" type="checkbox" data-value="{{ code }}"
+            <input id="{{ code }}" class="country-input" type="checkbox" data-type="countries" data-value="{{ code }}"
             {% if code in selected_countries %}checked{% endif %}>
             <label for="{{ code }}" class="country-label" data-value="{{ code }}">{{ label }}</label>
         {% endfor %}
     </div>
-    <div class="category-selector selector">
+    <div class="category-selector selector" id="category-selector">
+        <div class="title">Category</div>
         {% for category in categories %}
-            <input id="{{ category }}" class="category-input" type="checkbox" data-value="{{ code }}"
+            <input id="{{ category }}" class="category-input" type="checkbox" data-type="categories" data-value="{{ category }}"
             {% if category in selected_categories %}checked{% endif %}>
             <label for="{{ category }}" class="category-label" data-value="{{ category }}">{{ category }}</label>
         {% endfor %}
     </div>
-    <div class="source-selector selector">
+    <div class="source-selector selector" id="source-selector">
+        <div class="title">Source</div>
         {% for source in sources %}
-            <input id="{{ source.api_id }}" class="source-input" type="checkbox" data-value=""
-            {% if source.name in selected_sources %}checked{% endif %}>
+            <input id="{{ source.api_id }}" class="source-input" type="checkbox" data-type="sources" data-value="{{ source.api_id }}"
+            {% if source.api_id in selected_sources %}checked{% endif %}>
             <label for="{{ source.api_id }}" class="source-label" data-value="{{ source.api_id }}">{{ source.name }}</label>
         {% endfor %}
     </div>
 </div>
 
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{% static 'main/js/update_globalFetchPreferences.js' %}" defer></script>
 {% endblock %}

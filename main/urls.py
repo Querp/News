@@ -7,7 +7,7 @@ from .views.articles import (
 from .views.sources import sources
 from .views.automation import fetch_and_save_headlines, extract_locations_view
 from .views.world_map import world_map_view
-from .views.settings import settings_view
+from .views.settings import settings_view, update_preferences
 
 urlpatterns = [
     path('', my_articles, name='my_articles'),
@@ -18,4 +18,5 @@ urlpatterns = [
     path("extract-locations/", extract_locations_view),
     path("world_map/", world_map_view, name='world_map'),
     path("settings/", settings_view, name='settings'),
+    path('update-preferences/', update_preferences, name='update_preferences'),
 ]
